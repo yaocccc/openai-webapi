@@ -36,7 +36,7 @@ const send_to_openai = async (prompt) => {
 
         return result.replace(/^\n*/g, "");
     } catch (error) {
-        if (error.response?.status) {
+        if (error.response && error.response.status) {
             console.error(error.response.status, error.message);
 
             for await (const data of error.response.data) {
