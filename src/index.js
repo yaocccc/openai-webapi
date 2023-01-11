@@ -14,6 +14,11 @@ app.use(async ctx => {
         })(ctx, async () => {})
 
         const q = ctx.request.body.q;
+        if (!q) {
+            ctx.body = '';
+            return;
+        }
+
         const a = await send_to_openai(q);
 
         console.log("Q:", q);
