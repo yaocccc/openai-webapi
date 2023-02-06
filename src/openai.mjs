@@ -28,12 +28,12 @@ const send_to_openai = async (prompt) => {
 
                 result += text;
 
-                // process.stdout.write(text);
             } catch (error) {
                 console.error("Could not JSON parse stream message", message, error);
             }
         }
 
+        console.log(result)
         return result.replace(/^\n*/g, "");
     } catch (error) {
         if (error.response && error.response.status) {

@@ -6,6 +6,16 @@ const app = new Koa();
 // response
 app.use(async ctx => {
     try {
+        if (ctx.request.headers.origin) {
+            ctx.set("access-control-allow-credentials", "true")
+            ctx.set("access-control-allow-origin", ctx.request.headers.origin)
+        } else {
+            ctx.set("access-control-allow-origin", "*")
+        }
+        ctx.set("access-control-allow-methods", "GET,DELETE,POST,PUT,PATCH,OPTIONS")
+        ctx.set("access-control-allow-headers", "content-type,user_name,remote_user")
+        ctx.set("access-control-max-age", "600")
+
         await bodyParser({
             multipart: true,
             formidable: {
@@ -19,14 +29,18 @@ app.use(async ctx => {
             return;
         }
 
-        const a = await send_to_openai(q);
-
         console.log("Q:", q);
-        console.log("A:", a);
-        console.log();
-
+        let a = ""
+        let tryed = 0;
+        while ((a == '' || !a) && ++tryed < 3) {
+            try {
+                a = await send_to_openai(q);
+            } catch (err) {
+                console.log(err);
+            }
+        }
         ctx.body = a
-    } catch (err) {}
+    } catch (err) { console.log(err) }
 });
 
 app.listen(3000);
